@@ -21,7 +21,6 @@ function Dashboard() {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
   const [tables, setTables] = useState([]);
-  const [tablesError, setTablesError] = useState(null);
   const [date, setDate] = useState(query.get("date") || today());
 
   useEffect(loadDashboard, [date]);
@@ -33,10 +32,15 @@ function Dashboard() {
   function loadDashboard() {
     const abortController = new AbortController();
     setReservationsError(null);
+    
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
-    listTables(abortController.signal).then(setTables).catch(setTablesError);
+    
+    listTables(abortController.signal)
+      .then(setTables)
+      .catch((e) => console.error(e));
+
     return () => abortController.abort();
   }
 
@@ -60,7 +64,6 @@ function Dashboard() {
       </label>
       <div className="d-md-flex mb-3 "></div>
       <ErrorAlert error={reservationsError} />
-      <ErrorAlert error={tablesError} />
       <h3>Tables </h3>
       <div className="d-flex justify-content-center mb-1 flex-wrap">
         {tables.map((table) => (
