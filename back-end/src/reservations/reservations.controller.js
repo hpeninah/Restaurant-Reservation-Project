@@ -183,9 +183,8 @@ const list = async (req, res) => {
     const data = await service.listByMobileNumber(mobile_number);
     res.json({ data: data });
     return;
-  } else {
-    res.json({ data: [] });
   }
+  res.json({ data: [] });
 
 }
 
