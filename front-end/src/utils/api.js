@@ -77,10 +77,6 @@
    return await fetchJson(url, { headers, signal }, []);
  }
  
- export async function createTable(table) {
-   return await axios.post(`${API_BASE_URL}/tables`, table);
- }
- 
  export async function updateTable(table_id, reservation_id) {
    return await axios.put(
      `${API_BASE_URL}/tables/${table_id}/seat`,

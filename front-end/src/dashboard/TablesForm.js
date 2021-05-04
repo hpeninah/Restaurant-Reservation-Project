@@ -1,35 +1,40 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
-import { createTable } from "../utils/api";
+import axios from "axios";
 
 export default function Tables() {
-  const history = useHistory();
-  const initialState = {
-    table_name: "",
-    capacity: 0,
-  };
-  const [formData, setFormData] = useState({ ...initialState });
-  const [tablesError, setTablesError] = useState(null);
-  const handleChange = ({ target }) => {
-    const value =
-      target.type === "number" ? Number(target.value) : target.value;
-    setFormData({
-      ...formData,
-      [target.name]: value,
-    });
-  };
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://localhost:5000";
 
-  const handleSubmit = async (event) => {
+  let history = useHistory();
+  
+  const[tableName, setTableName] = useState("");
+  const [capacity, setCapacity] = useState(1);
+  const [reservationsError, setReservationsError] = useState(null);
+
+  const handleTableName = (event) => setTableName(event.target.value);
+  const handleCapacity = (event) => setCapacity(event.target.value);
+
+  const handleSubmit = (event) => {
     event.preventDefault();
-    try {
-      await createTable({ data: formData });
-      setFormData({ ...initialState });
-      history.push(`/dashboard`);
-    } catch (err) {
-      setTablesError({ message: err.response.data.error });
+
+    const table = {
+      table_name: tableName,
+      capacity: Number(capacity),
     }
-  };
+
+    axios.post(`${API_BASE_URL}/tables`, { data: table })
+    .then((response) => response.status === 201 ? history.push(`/dashboard`) : null)
+    .catch((err) => {
+      console.error(err.response.data.error);
+      setReservationsError({ message: err.response.data.error })
+    })
+  }
+
+  const handleCancel = (event) => {
+    event.preventDefault();
+    history.goBack();
+  }
 
   return (
     <>
@@ -44,8 +49,7 @@ export default function Tables() {
                 id="table_name"
                 type="text"
                 name="table_name"
-                onChange={handleChange}
-                value={formData.table_name}
+                onChange={handleTableName}
                 required
               />
             </label>
@@ -60,21 +64,19 @@ export default function Tables() {
                 min="1"
                 max="22"
                 name="capacity"
-                onChange={handleChange}
-                value={formData.capacity}
+                onChange={handleCapacity}
                 required
               />
             </label>
           </div>
           <div className="form-group">
             <button className="btn btn-sm btn-info" type="submit">Submit</button>
-            <button className="mx-3 btn btn-sm btn-danger" onClick={() => history.goBack()}>
+            <button className="mx-3 btn btn-sm btn-danger" onClick={handleCancel}>
               Cancel
             </button>
-            <button className="btn btn-sm btn-warning" onClick={() => setFormData(initialState)}>Reset</button>
           </div>
         </form>
-        <ErrorAlert error={tablesError} />
+        <ErrorAlert error={reservationsError} />
       </div>
     </>
   );
