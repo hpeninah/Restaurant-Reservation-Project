@@ -1,7 +1,7 @@
 # Capstone: Restaurant Reservation System
 
 ## Live Site
-[Periodic Tables Restaurant Reservation System](https://front-end-three-kappa.vercel.app/dashboard)
+[Periodic Tables Restaurant Reservation System](https://front-end-gamma-lemon.vercel.app/dashboard)
 
 ## Summary
 This application demonstrates a system that is used to keep track of reservations and table assignments for a restaurant called Periodic Tables. The user can create new reservations, update reservations, seat guests, and search for existing reservations by a customer's mobile number. It allows for monitoring reservations as to which tables they are seated and which tables are unavailable at specific times.
