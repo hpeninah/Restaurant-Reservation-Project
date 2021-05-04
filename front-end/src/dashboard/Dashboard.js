@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { useLocation } from "react-router-dom";
-import { today, next, previous, formatAsDate } from "../utils/date-time";
+import { today, next, previous, formatDate } from "../utils/date-time";
 import Reservation from "./Reservation";
 import Tables from "./Tables";
 
@@ -21,6 +21,7 @@ function Dashboard() {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
   const [tables, setTables] = useState([]);
+  const [tablesError, setTablesError] = useState(null);
   const [date, setDate] = useState(query.get("date") || today());
 
   useEffect(loadDashboard, [date]);
@@ -32,21 +33,16 @@ function Dashboard() {
   function loadDashboard() {
     const abortController = new AbortController();
     setReservationsError(null);
-    
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
-    
-    listTables(abortController.signal)
-      .then(setTables)
-      .catch((e) => console.error(e));
-
+    listTables(abortController.signal).then(setTables).catch(setTablesError);
     return () => abortController.abort();
   }
 
   return (
     <main className="text-center">
-      <h1 className="m-3">{formatAsDate(date)}</h1>
+      <h1 className="m-3">{formatDate(date)}</h1>
       <button onClick={() => setDate(previous(date))} className="btn btn-sm btn-light">Previous Day</button>
       <button className="mx-3 btn btn-sm btn-light" onClick={() => setDate(today())}>
         Today
@@ -64,6 +60,7 @@ function Dashboard() {
       </label>
       <div className="d-md-flex mb-3 "></div>
       <ErrorAlert error={reservationsError} />
+      <ErrorAlert error={tablesError} />
       <h3>Tables </h3>
       <div className="d-flex justify-content-center mb-1 flex-wrap">
         {tables.map((table) => (
@@ -88,3 +85,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
